@@ -1,7 +1,63 @@
 name: "Qwiet preZero"
 description: "Perform a Qwiet preZero Scan of your GitHub Workspace"
 author: "Qwiet AI"
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  shiftleft-access-token: 
+    description: 'Qwiet preZero Authentication Token'
+    required: true
+  language:
+    description: 'Language Code'
+    required: false
+  importGitHub:
+    description: "Enable SARIF report generation and upload (true/false)"
+    required: false
+    default: "true"    
+  verbose:
+    description: "Enable Verbose logging"
+    required: false
+    default: "false"     
+
+runs-on: ubuntu-latest
+container: shiftleft/core:latest
 
 runs:
-  using: "node16"
-  main: "dist/index.js"
+  using: "composite"
+  steps:
+  - uses: actions/checkout@v4
+  - name: preZero Static Analysis
+    if: inputs.verbose == 'true'
+    shell: bash
+    run: |
+      sl analyze --app "${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/}" --verbose 
+    env:
+      SHIFTLEFT_API_HOST: www.shiftleft.io
+      SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
+      SHIFTLEFT_GRPC_API_HOST: api.shiftleft.io:443
+
+  - name: preZero Static Analysis
+    if: inputs.verbose == 'false'
+    shell: bash
+    run: |
+      sl analyze --app "${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/}" 
+    env:
+      SHIFTLEFT_API_HOST: www.shiftleft.io
+      SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
+      SHIFTLEFT_GRPC_API_HOST: api.shiftleft.io:443      
+      
+  - name: Generate Sarif Report
+    if: inputs.importGitHub == 'true'
+    shell: bash
+    run: |
+      chmod +x ${{ github.action_path }}/src/generate_sarif.sh
+      ${{ github.action_path }}/src/generate_sarif.sh
+      
+  - name: Export Sarif Report to GitHub Code Scanning
+    if: inputs.importGitHub == 'true'
+    uses: github/codeql-action/upload-sarif@v3
+    with:
+      sarif_file: report/qwiet-sarif-report-${{ github.repository_owner }}-${{ github.event.repository.name }}.sarif
+      category: qwiet-prezero

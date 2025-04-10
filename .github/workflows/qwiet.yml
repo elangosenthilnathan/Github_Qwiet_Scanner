@@ -13,8 +13,10 @@ jobs:
       actions: read # Needed in private repositories for github/codeql-action/upload-sarif
 
     runs-on: ubuntu-latest
-    container: shiftleft/core:latest
+
     steps:
       - name: Checkout repository  # This is necessary to access your code
         uses: actions/checkout@v4
       - uses: ./
+        with:
+            importGitHub: "true"
