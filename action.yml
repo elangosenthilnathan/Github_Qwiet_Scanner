@@ -1,0 +1,9 @@
+name: "Qwiet preZero"
+description: "Perform a Qwiet preZero Scan of your GitHub Workspace"
+author: "Qwiet AI"
+
+runs:
+  using: "node16"
+  main: "dist/index.js"
+
+
