@@ -15,7 +15,7 @@ inputs:
   importGitHub:
     description: "Enable SARIF report generation and upload (true/false)"
     required: false
-    default: "true"    
+    default: "false"    
   verbose:
     description: "Enable Verbose logging"
     required: false
@@ -27,6 +27,13 @@ container: shiftleft/core:latest
 runs:
   using: "composite"
   steps:
+  - name: Validate if token available
+    if: inputs.shiftleft-access-token == ''
+    shell: bash
+    run: |
+      echo "Qwiet Access Token is mandatory to use this action. Visit https://docs.shiftleft.io/sast/getting-started/overview for details."  
+      exit 1
+      
   - uses: actions/checkout@v4
   - name: preZero Static Analysis
     if: inputs.verbose == 'true'
