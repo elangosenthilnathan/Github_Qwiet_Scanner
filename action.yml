@@ -23,9 +23,18 @@ inputs:
        
 
 runs-on: ubuntu-latest
-container: shiftleft/core:latest
+permissions:
+  actions: read
+  contents: read
+  security-events: write
 
 runs:
+
+  permissions:
+    actions: read
+    contents: read
+    security-events: write
+
   using: "composite"
   steps:
   - name: Validate if token available
