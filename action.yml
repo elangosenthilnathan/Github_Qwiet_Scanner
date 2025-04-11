@@ -71,8 +71,8 @@ runs:
     if: inputs.importGitHub == 'true'
     shell: bash
     run: |
-      chmod +x ${{ github.action_path }}/src/generate_sarif.sh
-      ${{ github.action_path }}/src/generate_sarif.sh
+      chmod +x ${{ github.action_path }}/generate_sarif.sh
+      ${{ github.action_path }}/generate_sarif.sh
       
   - name: Export Sarif Report to GitHub Code Scanning
     if: inputs.importGitHub == 'true'
