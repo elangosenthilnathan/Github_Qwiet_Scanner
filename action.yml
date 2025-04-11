@@ -48,7 +48,7 @@ runs:
     if: inputs.verbose == 'true'
     shell: bash
     run: |
-      sl analyze --app "${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/}" --verbose 
+      docker run --platform linux/amd64 --rm -t --name slcore -e SHIFTLEFT_ACCESS_TOKEN="$SHIFTLEFT_ACCESS_TOKEN" -v $PWD:/app -v /tmp:/tmp shiftleft/core:latest sl analyze --verbose --app "${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/}" --structured-output --structured-output-format JSON --structured-output-file-path /app/structuredOutput.json /app
     env:
       SHIFTLEFT_API_HOST: www.shiftleft.io
       SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
@@ -58,7 +58,7 @@ runs:
     if: inputs.verbose == 'false'
     shell: bash
     run: |
-      sl analyze --app "${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/}" 
+      docker run --platform linux/amd64 --rm -t --name slcore -e SHIFTLEFT_ACCESS_TOKEN="$SHIFTLEFT_ACCESS_TOKEN" -v $PWD:/app -v /tmp:/tmp shiftleft/core:latest sl analyze --app "${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/}" --structured-output --structured-output-format JSON --structured-output-file-path /app/structuredOutput.json /app
     env:
       SHIFTLEFT_API_HOST: www.shiftleft.io
       SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
